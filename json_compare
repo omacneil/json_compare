@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+def main()
+  input_dir = get_input_dir
+  files     = get_json_files_from(input_dir)
+  recs      = get_json_recs_from(files)
+  report    = strs_from(recs,files)
+
+  report.keys.each  do |k|
+    last = ''
+    report[k].keys.each do |f|
+      fname = sprintf( "%-15s", f)
+      puts "\n" if last != k
+      last = k
+      puts "#{k}:#{report[k][f]}:#{fname}\n"
+    end
+  end
+
+end
+
+def get_input_dir()
+  input_dir = ARGV[0]
+  raise "DIRECTORY is required argument" if input_dir.nil?
+  raise "#{input_dir} is not a directory" if not File.directory?(input_dir)
+  return input_dir
+end
+
+def get_json_files_from(dir)
+  Dir.chdir(dir)
+  files=Dir.glob('*.json')
+  return files.sort
+end
+
+def get_json_recs_from(files)
+  results=[]
+
+  files.each do |f|
+    rec= {'filename'=>f, 'fhash'=>get_hash_from_json(f)}
+    results.push(rec)
+  end
+
+  return results
+end
+
+def get_hash_from_json(file)
+  fh_keys_source =File.read("#{file}")
+  result = JSON.parse(fh_keys_source)
+
+  return result
+end
+
+def strs_from(recs,filenames)
+  results={}
+  recs.each do |r|
+    str_from( r['filename'], '' ,r['fhash'] ,results ,filenames )
+  end
+  return results
+end
+
+def str_from(filename,parent,in_hash,out_hash,filenames)
+    in_hash=Hash[in_hash.sort]
+
+    in_hash.keys.each do |k|
+      if in_hash[k].is_a?(Hash)
+         str_from(filename,"#{parent}:#{k}",in_hash[k],out_hash,filenames)
+      else
+         key  = parent+':'+k
+         if out_hash[key].nil?
+           out_hash[key]={}
+           filenames.each do |j|
+             out_hash[key][j]='MISSING'
+           end
+         end
+
+        if in_hash[k]==""
+          value='""'
+        else
+          value=in_hash[k]
+        end
+         out_hash[key][filename]=value
+
+      end
+    end # in_hash.keys each do |k|
+end
+
+main()

@@ -1,3 +1,9 @@
+# DEPRECATED
+
+The `[diffant](https://github.com/omacneil/diffant)` project does everything
+json_compare does and more. For example, it handles yaml and ini in addition
+to json.  Unless you like ruby more than python, you should use diffant.
+
 # json_compare
 
 See how keys and values differ between json files. Works better than diff for

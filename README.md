@@ -1,6 +1,6 @@
 # DEPRECATED
 
-The `[diffant](https://github.com/omacneil/diffant)` project does everything
+The [diffant](https://github.com/omacneil/diffant) project does everything
 json_compare does and more. For example, it handles yaml and ini in addition
 to json.  Unless you like ruby more than python, you should use diffant.
 
